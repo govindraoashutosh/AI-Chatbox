@@ -1,15 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-const initialstate = {
+const initialState = {
     messages : [] ,
     loading : false,
-    errors : null
+    error : null
     
 };
 
 export  const chatslice = createSlice({
       name: "chat",
-    initialstate,
+    initialState,
 
     reducers: {
         addMessages : (state,action) => {
@@ -32,10 +32,10 @@ export  const chatslice = createSlice({
   
 ) ;
 export const {
-  addMessage,
+  addMessages,
   setLoading,
   setError,
-  clearChat,
+  clearchat,
 } = chatslice.actions;
 
 export default chatslice.reducer;
