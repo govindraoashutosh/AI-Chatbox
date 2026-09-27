@@ -1,41 +1,67 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { getGeminiResponse } from "../services/geminiApi";
+
+export const sendMessage = createAsyncThunk(
+  "chat/sendMessage",
+  async (message, { rejectWithValue }) => {
+    try {
+      const aiResponse = await getGeminiResponse(message);
+
+      return {
+        userMessage: message,
+        aiMessage: aiResponse,
+      };
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
 const initialState = {
-    messages : [] ,
-    loading : false,
-    error : null
-    
+  messages: [],
+  loading: false,
+  error: null,
 };
 
-export  const chatslice = createSlice({
-      name: "chat",
-    initialState,
+const chatSlice = createSlice({
+  name: "chat",
+  initialState,
 
-    reducers: {
-        addMessages : (state,action) => {
-            state.messages.push(action.payload);
-        },
-        setLoading : (state,action) => {
-            state.loading = action.payload;
+  reducers: {
+    clearChat: (state) => {
+      state.messages = [];
+      state.error = null;
+    },
+  },
 
-        },
-        setError : (state,action) => {
-            state.error = action.payload;
-        },
-        clearchat : (state) => {
-            state.messages = [];
-            state.error = null;
-        }
+  extraReducers: (builder) => {
+    builder
+      .addCase(sendMessage.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
 
-    }
-}
-  
-) ;
-export const {
-  addMessages,
-  setLoading,
-  setError,
-  clearchat,
-} = chatslice.actions;
+      .addCase(sendMessage.fulfilled, (state, action) => {
+        state.loading = false;
 
-export default chatslice.reducer;
+        state.messages.push({
+          role: "user",
+          text: action.payload.userMessage,
+        });
+
+        state.messages.push({
+          role: "ai",
+          text: action.payload.aiMessage,
+        });
+      })
+
+      .addCase(sendMessage.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+  },
+});
+
+export const { clearChat } = chatSlice.actions;
+
+export default chatSlice.reducer;

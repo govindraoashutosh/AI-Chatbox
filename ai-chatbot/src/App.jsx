@@ -4,7 +4,7 @@ import Header from "./components/Header/Header";
 import PromptHero from "./components/PromptHero/PromptHero";
 import PromptInput from "./components/PromptInput/PromptInput";
 import StarterCards from "./components/Startercards/Startercards";
-
+import ChatMessages from "./components/chatmessages/chatmessages";
 import "./App.css";
 
 export default function App() {
@@ -25,6 +25,8 @@ return (
 
       <main className="main-workspace" >
         <PromptHero userName="Ashutosh" />
+        <ChatMessages />
+
         <PromptInput value={inputValue}
         onChange={setinputValue} />
         <StarterCards onSelectExample={Handelcardclick} />

@@ -1,6 +1,13 @@
 import './Header.css';
+import { useDispatch } from "react-redux";
+import { clearChat } from "../../redux/chatslice";
 
 export default function Header() {
+     const dispatch = useDispatch();
+
+  const handleNewThread = () => {
+    dispatch(clearChat());
+  };
   return (
     <header className="top-header">
 
@@ -24,7 +31,8 @@ export default function Header() {
           <span className="btn-text">Invite</span>
         </button>
 
-        <button className="primary-pill-btn">
+        <button className="primary-pill-btn"  onClick={handleNewThread}>
+             
           +
           <span>New Thread</span>
         </button>

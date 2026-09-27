@@ -1,24 +1,29 @@
-import { useState } from 'react';
-import './PromptInput.css';
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { sendMessage } from "../../redux/chatslice";
+
+import "./PromptInput.css";
 
 export default function PromptInput({ value, onChange }) {
+  const dispatch = useDispatch();
+
+  const loading = useSelector((state) => state.chat.loading);
+
   const [citationEnabled, setCitationEnabled] = useState(true);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (value.trim()) {
-      console.log('Prompt:', value);
-      onChange('');
-    }
+    if (!value.trim() || loading) return;
+
+    dispatch(sendMessage(value));
+
+    onChange("");
   };
 
   return (
     <div className="prompt-input-card">
-
-      {/* Input Area */}
       <div className="input-upper-row">
-
         <span className="sparkle-icon">✦</span>
 
         <textarea
@@ -28,20 +33,16 @@ export default function PromptInput({ value, onChange }) {
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
+            if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
               handleSubmit(e);
             }
           }}
         />
-
       </div>
 
-      {/* Bottom Toolbar */}
       <div className="input-lower-toolbar">
-
         <div className="toolbar-left">
-
           <button type="button" className="toolbar-pill-btn">
             📎
             <span>Attach</span>
@@ -51,38 +52,34 @@ export default function PromptInput({ value, onChange }) {
             <span>Writing Styles</span>
             <span>⌄</span>
           </button>
-
         </div>
 
         <div className="toolbar-right">
-
-          {/* Citation Toggle */}
           <div
             className="citation-toggle"
             onClick={() => setCitationEnabled(!citationEnabled)}
           >
-            <div className={`switch-pill ${citationEnabled ? 'active' : ''}`}>
+            <div
+              className={`switch-pill ${
+                citationEnabled ? "active" : ""
+              }`}
+            >
               <div className="switch-thumb"></div>
             </div>
 
-            <span className="citation-label">
-              Citation
-            </span>
+            <span className="citation-label">Citation</span>
           </div>
 
-          {/* Send */}
           <button
             type="button"
             className="send-prompt-btn"
             onClick={handleSubmit}
+            disabled={loading}
           >
-            ↑
+            {loading ? "..." : "↑"}
           </button>
-
         </div>
-
       </div>
-
     </div>
   );
 }
